@@ -71,8 +71,10 @@ fn prepare_libtorch_dir() -> PathBuf {
 
     let device = match env::var("TORCH_CUDA_VERSION") {
         Ok(cuda_env) => match os.as_str() {
-            "linux" => match cuda_env.trim_start() {
+            "linux" | "windows" => match cuda_env.trim_start() {
                 "9.0" | "90" | "cu90" => "cu90",
+                "9.2" | "92" | "cu92" => "cu92",
+                "10.0" | "100" | "cu100" => "cu100",
                 version => panic!("Unsupported CUDA version specified: {}", version),
             },
             os_str => panic!(
@@ -100,8 +102,8 @@ fn prepare_libtorch_dir() -> PathBuf {
                     TORCH_VERSION
                 ),
                 "windows" => format!(
-                    "https://download.pytorch.org/libtorch/cpu/libtorch-win-shared-with-deps-{}.zip",
-                    TORCH_VERSION
+                    "https://download.pytorch.org/libtorch/{}/libtorch-win-shared-with-deps-{}.zip",
+                    device, TORCH_VERSION
                 ),
                 _ => panic!("Unsupported OS"),
             };
